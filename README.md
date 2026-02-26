@@ -5,13 +5,13 @@
 # TEAM NO : 14 
 
 TEAM NAME:SEVENTEEN
-BR
+<br>
 TEAM MEMBERS:
-BR
+<br>
 SWETHA NIVASINI BR
-BR
+<br>
 A PRANEYA
-BR
+<br>
 MAHAGAURI P
 
 # PROBLEM STATEMENT
@@ -31,16 +31,16 @@ The solution aims to eliminate inefficiencies in the traditional donation supply
 
  # Features
  
-  Digitally tracks the organ from donor to patient
-  Monitors temperature in real-time
-  GPS Tracking 
-  Logs records in every transfer stage with timestamps
-  Ensures transparency and accountability
-  Tamper Proof App
-  Blood ID related with QR for physical mapping
-  Priority based dispatch
-  Multiple login based authorization
-  Aadhar Based Authorization for Donors
+  - Digitally tracks the organ from donor to patient
+  - Monitors temperature in real-time
+  - GPS Tracking 
+  - Logs records in every transfer stage with timestamps
+  - Ensures transparency and accountability
+  - Tamper Proof App
+  - Blood ID related with QR for physical mapping
+  - Priority based dispatch
+  - Multiple login based authorization
+  - Aadhar Based Authorization for Donors
 
 # WORKFLOW
 
@@ -48,17 +48,17 @@ The solution aims to eliminate inefficiencies in the traditional donation supply
 
 # TECH STACK
 
-React.js 
-Tailwind CSS
-HTML
-JS
-Leaflet.js 
-SPRINGBOOT
-Node.js + Express
-REST APIs
-JWT Authentication
-WebSockets 
-MYSQL Database
+- React.js 
+- Tailwind CSS
+- HTML
+- JS
+- Leaflet.js 
+- SPRINGBOOT
+- Node.js + Express
+- REST APIs
+- JWT Authentication
+- WebSockets 
+- MYSQL Database
 
 # OUR SOLUTION
 
