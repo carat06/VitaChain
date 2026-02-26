@@ -1,16 +1,65 @@
-# React + Vite
+# VitaChain
+# Tamper-Proof Blood Bank & Organ Transport Tracker
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# DOMAIN:HealthCare And Wellness
+# TEAM NO : 14 
 
-Currently, two official plugins are available:
+TEAM NAME:SEVENTEEN
+TEAM MEMBERS:
+SWETHA NIVASINI BR
+A PRANEYA
+MAHAGAURI P
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+# PROBLEM STATEMENT
 
-## React Compiler
+Problem Statement 2:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Design a secure tracking system that logs blood/organ journey from donation to transfusion/transplant with immutable temperature logs, testing certifications, and chain of custody.
 
-## Expanding the ESLint configuration
+<img width="1132" height="662" alt="Screenshot 2026-02-26 143129" src="https://github.com/user-attachments/assets/9d53ae5f-beaa-4aa0-83c0-ab49fce58d5d" />
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+# PROPOSED SOLUTION
+
+Our Team proposes a centralized digital tracking platform that monitors the complete journey of organs and blood donations from donor to patient.
+The system ensures transparency, safety, and efficient delivery by integrating donor registration, medical testing, storage management, real-time tracking, and environmental monitoring.
+
+The solution aims to eliminate inefficiencies in the traditional donation supply chain by providing end-to-end visibility and automated monitoring throughout the lifecycle of a donation.
+
+ # Features
+ 
+  Digitally tracks the organ from donor to patient
+  Monitors temperature in real-time
+  GPS Tracking 
+  Logs records in every transfer stage with timestamps
+  Ensures transparency and accountability
+  Tamper Proof App
+  Blood ID related with QR for physical mapping
+  Priority based dispatch
+  Multiple login based authorization
+  Aadhar Based Authorization for Donors
+
+# WORKFLOW
+
+<img width="1918" height="1011" alt="Screenshot 2026-02-26 143810" src="https://github.com/user-attachments/assets/d2a4ca30-1dfc-493b-9383-d0c591b31335" />
+
+# TECH STACK
+
+React.js 
+Tailwind CSS
+HTML
+JS
+Leaflet.js 
+SPRINGBOOT
+Node.js + Express
+REST APIs
+JWT Authentication
+WebSockets 
+MYSQL Database
+
+# OUR SOLUTION
+
+<img width="1899" height="859" alt="Screenshot 2026-02-26 144115" src="https://github.com/user-attachments/assets/12297126-ec7f-4104-b645-e18b4a9b4e9e" />
+
+<img width="1894" height="989" alt="Screenshot 2026-02-26 144136" src="https://github.com/user-attachments/assets/cf8adf6d-45e2-4d79-a481-e234aff8b656" />
+
+# CONCLUSION
