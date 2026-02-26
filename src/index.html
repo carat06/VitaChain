@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VitaChain — Donor to Patient</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080c10;
+    --surface: #0d1219;
+    --surface2: #141b24;
+    --border: #1e2d3d;
+    --accent: #00e5b0;
+    --accent2: #e5003a;
+    --accent3: #f5a623;
+    --text: #d6e4f0;
+    --text-dim: #5a7a90;
+    --blood: #c0392b;
+    --organ: #2980b9;
+    --safe: #27ae60;
+    --warn: #f39c12;
+    --danger: #e74c3c;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Syne', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  .mono { font-family: 'Space Mono', monospace; }
+
+  /* ── GRID BG ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(0,229,176,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,176,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(8,12,16,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex; align-items: center; gap: 12px;
+    height: 56px;
+  }
+  .nav-logo {
+    font-size: 18px; font-weight: 800; letter-spacing: -0.5px;
+    color: var(--accent);
+    margin-right: auto;
+  }
+  .nav-logo span { color: var(--text); }
+  .role-btn {
+    padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 700;
+    border: 1px solid var(--border); background: var(--surface);
+    color: var(--text-dim); cursor: pointer; transition: all .2s; font-family: 'Syne',sans-serif;
+    letter-spacing: .5px; text-transform: uppercase;
+  }
+  .role-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
+  .role-btn:hover:not(.active) { border-color: var(--accent); color: var(--accent); }
+
+  /* ── PAGES ── */
+  .page { display: none; padding: 28px 24px; position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; }
+  .page.active { display: block; }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .card-title {
+    font-size: 11px; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 16px;
+  }
+
+  /* ── SECTION HEADER ── */
+  .section-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .section-title { font-size: 22px; font-weight: 800; }
+  .badge {
+    padding: 4px 10px; border-radius: 20px; font-size: 11px;
+    font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  }
+  .badge-green { background: rgba(39,174,96,.15); color: var(--safe); border: 1px solid rgba(39,174,96,.3); }
+  .badge-red { background: rgba(231,76,60,.15); color: var(--danger); border: 1px solid rgba(231,76,60,.3); }
+  .badge-yellow { background: rgba(243,156,18,.15); color: var(--warn); border: 1px solid rgba(243,156,18,.3); }
+  .badge-blue { background: rgba(41,128,185,.15); color: #5dade2; border: 1px solid rgba(41,128,185,.3); }
+  .badge-teal { background: rgba(0,229,176,.12); color: var(--accent); border: 1px solid rgba(0,229,176,.3); }
+
+  /* ── FORM ── */
+  label { font-size: 12px; font-weight: 700; color: var(--text-dim); letter-spacing: 1px; text-transform: uppercase; display: block; margin-bottom: 6px; }
+  input, select, textarea {
+    width: 100%; padding: 10px 14px; border-radius: 8px;
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text); font-family: 'Syne', sans-serif; font-size: 14px;
+    outline: none; transition: border-color .2s; margin-bottom: 14px;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+  select option { background: var(--bg); }
+
+  .btn {
+    padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 700;
+    border: none; cursor: pointer; transition: all .2s; font-family: 'Syne',sans-serif;
+    letter-spacing: .5px; text-transform: uppercase;
+  }
+  .btn-primary { background: var(--accent); color: #000; }
+  .btn-primary:hover { background: #00ffbf; transform: translateY(-1px); box-shadow: 0 0 20px rgba(0,229,176,.3); }
+  .btn-danger { background: var(--danger); color: #fff; }
+  .btn-danger:hover { background: #ff6b6b; }
+  .btn-warn { background: var(--warn); color: #000; }
+  .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-dim); }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-sm { padding: 6px 12px; font-size: 11px; }
+
+  /* ── GRID ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  @media(max-width:700px) { .grid-2,.grid-3 { grid-template-columns: 1fr; } }
+
+  /* ── STAT BOXES ── */
+  .stat-box {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px; text-align: center;
+  }
+  .stat-num { font-size: 32px; font-weight: 800; font-family: 'Space Mono',monospace; }
+  .stat-label { font-size: 11px; color: var(--text-dim); letter-spacing: 1px; text-transform: uppercase; margin-top: 4px; }
+
+  /* ── TIMELINE ── */
+  .timeline { position: relative; padding-left: 24px; }
+  .timeline::before { content:''; position:absolute; left:8px; top:0; bottom:0; width:2px; background: var(--border); }
+  .tl-item { position: relative; margin-bottom: 20px; }
+  .tl-dot {
+    position: absolute; left: -20px; top: 4px;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: var(--surface2); border: 2px solid var(--border);
+  }
+  .tl-dot.done { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 8px rgba(0,229,176,.5); }
+  .tl-dot.active { background: var(--warn); border-color: var(--warn); animation: pulse 1.5s infinite; }
+  .tl-dot.error { background: var(--danger); border-color: var(--danger); }
+  @keyframes pulse { 0%,100%{box-shadow:0 0 4px rgba(243,156,18,.5)} 50%{box-shadow:0 0 14px rgba(243,156,18,.9)} }
+  .tl-title { font-size: 13px; font-weight: 700; }
+  .tl-sub { font-size: 12px; color: var(--text-dim); margin-top: 2px; font-family:'Space Mono',monospace; }
+
+  /* ── ALERT BOX ── */
+  .alert {
+    padding: 12px 16px; border-radius: 8px; font-size: 13px; font-weight: 600;
+    margin-bottom: 10px; display: flex; align-items: center; gap: 10px;
+    animation: slideIn .3s ease;
+  }
+  .alert-danger { background: rgba(231,76,60,.15); border: 1px solid rgba(231,76,60,.4); color: #ff8080; }
+  .alert-warn { background: rgba(243,156,18,.1); border: 1px solid rgba(243,156,18,.35); color: var(--warn); }
+  .alert-success { background: rgba(39,174,96,.1); border: 1px solid rgba(39,174,96,.35); color: #6edb95; }
+  @keyframes slideIn { from{transform:translateX(-10px);opacity:0} to{transform:none;opacity:1} }
+
+  /* ── MAP PLACEHOLDER ── */
+  .map-area {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 10px; height: 220px; position: relative; overflow: hidden;
+  }
+  .map-grid {
+    position: absolute; inset: 0;
+    background-image: linear-gradient(rgba(0,229,176,.05) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(0,229,176,.05) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+  .map-route {
+    position: absolute; inset: 0;
+  }
+  .map-vehicle {
+    position: absolute; font-size: 20px;
+    transition: left 2s linear, top 2s linear;
+    filter: drop-shadow(0 0 6px rgba(0,229,176,.8));
+  }
+  .map-label {
+    position: absolute; font-size: 10px; font-family: 'Space Mono',monospace;
+    color: var(--accent); background: rgba(0,0,0,.7); padding: 2px 6px; border-radius: 4px;
+  }
+
+  /* ── TEMP GAUGE ── */
+  .temp-bar-wrap {
+    background: var(--surface2); border-radius: 6px; height: 12px; margin: 8px 0;
+    position: relative; overflow: hidden;
+  }
+  .temp-bar {
+    height: 100%; border-radius: 6px;
+    transition: width .5s ease, background .5s ease;
+  }
+  .temp-reading {
+    font-family: 'Space Mono',monospace; font-size: 20px; font-weight: 700;
+  }
+
+  /* ── MATCH CARD ── */
+  .match-card {
+    border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px;
+    display: flex; align-items: center; gap: 12px; margin-bottom: 10px;
+    background: var(--surface2); cursor: pointer; transition: all .2s;
+  }
+  .match-card:hover { border-color: var(--accent); }
+  .match-card.matched { border-color: var(--safe); background: rgba(39,174,96,.06); }
+  .match-icon { font-size: 24px; flex-shrink: 0; }
+  .match-info { flex: 1; }
+  .match-name { font-size: 14px; font-weight: 700; }
+  .match-meta { font-size: 12px; color: var(--text-dim); font-family:'Space Mono',monospace; }
+
+  /* ── JOURNEY CLOSED ── */
+  .journey-closed {
+    text-align: center; padding: 40px 20px;
+  }
+  .journey-closed .big-icon { font-size: 64px; margin-bottom: 16px; }
+  .journey-closed h2 { font-size: 26px; font-weight: 800; color: var(--accent); margin-bottom: 8px; }
+
+  /* ── STORAGE ITEM ── */
+  .storage-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px; border-radius: 8px; background: var(--surface2);
+    border: 1px solid var(--border); margin-bottom: 8px;
+  }
+  .storage-item .temp-mini {
+    font-family: 'Space Mono',monospace; font-size: 13px; min-width: 56px; text-align: right;
+  }
+  .progress-ring { position: relative; width: 38px; height: 38px; flex-shrink:0; }
+  .progress-ring svg { transform: rotate(-90deg); }
+  .progress-ring circle { transition: stroke-dashoffset 1s; }
+
+  /* ── TABS ── */
+  .tabs { display: flex; gap: 4px; margin-bottom: 20px; flex-wrap: wrap; }
+  .tab {
+    padding: 7px 16px; border-radius: 8px; font-size: 12px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .5px; cursor: pointer;
+    background: var(--surface2); border: 1px solid var(--border); color: var(--text-dim);
+    transition: all .2s;
+  }
+  .tab.active { background: var(--accent); color: #000; border-color: var(--accent); }
+
+  .hidden { display: none !important; }
+  .divider { height: 1px; background: var(--border); margin: 16px 0; }
+
+  .tag {
+    display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px;
+    font-weight: 700; margin-right: 4px; font-family:'Space Mono',monospace;
+  }
+  .tag-blood { background: rgba(192,57,43,.2); color: #e07070; border: 1px solid rgba(192,57,43,.3); }
+  .tag-organ { background: rgba(41,128,185,.2); color: #7ab8e0; border: 1px solid rgba(41,128,185,.3); }
+
+  .flicker { animation: flicker 2s infinite; }
+  @keyframes flicker { 0%,100%{opacity:1} 50%{opacity:.6} }
+
+  .gps-dot {
+    display: inline-block; width:8px; height:8px; border-radius:50%;
+    background: var(--accent); animation: pulse 1.5s infinite; margin-right:6px;
+  }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Vita<span>Chain</span></div>
+  <button class="role-btn active" onclick="showPage('donor')">🩸 Donor</button>
+  <button class="role-btn" onclick="showPage('procurement')">🔬 Lab</button>
+  <button class="role-btn" onclick="showPage('storage')">🏪 Storage</button>
+  <button class="role-btn" onclick="showPage('hospital')">🏥 Hospital</button>
+  <button class="role-btn" onclick="showPage('dispatch')">🚑 Dispatch</button>
+  <button class="role-btn" onclick="showPage('patient')">💊 Patient</button>
+</nav>
+
+<!-- ═══════════ DONOR PAGE ═══════════ -->
+<div id="page-donor" class="page active">
+  <div class="section-header">
+    <div class="section-title">Register Donation</div>
+    <span class="badge badge-teal">Donor Portal</span>
+  </div>
+  <div id="donor-alerts"></div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Your Information</div>
+      <label>Full Name</label>
+      <input id="d-name" type="text" placeholder="Arjun Sharma">
+      <label>Blood Type</label>
+      <select id="d-blood">
+        <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+        <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+      </select>
+      <label>Donation Type</label>
+      <select id="d-type" onchange="updateDonorForm()">
+        <option value="blood">Blood Donation</option>
+        <option value="organ">Organ Donation</option>
+      </select>
+      <div id="organ-fields" class="hidden">
+        <label>Organ Type</label>
+        <select id="d-organ">
+          <option>Kidney</option><option>Liver</option><option>Heart</option>
+          <option>Lungs</option><option>Pancreas</option><option>Cornea</option>
+        </select>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Select Facility</div>
+      <label>City</label>
+      <select id="d-city">
+        <option>Chennai</option><option>Mumbai</option><option>Delhi</option><option>Bengaluru</option>
+      </select>
+      <label>Nearest Facility</label>
+      <select id="d-facility"></select>
+      <label>Preferred Date</label>
+      <input id="d-date" type="date">
+      <div style="margin-top:6px;">
+        <button class="btn btn-primary" onclick="submitDonation()" style="width:100%">Submit Donation Request →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" id="donation-status-card" style="display:none">
+    <div class="card-title">Donation Journey — Live</div>
+    <div class="timeline" id="donor-timeline"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Active Donations</div>
+    <div id="donor-list"></div>
+    <div id="donor-empty" style="color:var(--text-dim);font-size:13px;text-align:center;padding:20px;">No donations registered yet.</div>
+  </div>
+</div>
+
+<!-- ═══════════ PROCUREMENT / LAB PAGE ═══════════ -->
+<div id="page-procurement" class="page">
+  <div class="section-header">
+    <div class="section-title">Procurement & Testing</div>
+    <span class="badge badge-blue">Lab View</span>
+  </div>
+
+  <div class="grid-3" style="margin-bottom:16px">
+    <div class="stat-box">
+      <div class="stat-num" id="stat-pending">0</div>
+      <div class="stat-label">Pending Tests</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num" style="color:var(--safe)" id="stat-approved">0</div>
+      <div class="stat-label">Approved</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num" style="color:var(--danger)" id="stat-disposed">0</div>
+      <div class="stat-label">Disposed</div>
+    </div>
+  </div>
+
+  <div id="lab-list"></div>
+  <div id="lab-empty" style="color:var(--text-dim);font-size:13px;text-align:center;padding:20px;">No samples pending procurement.</div>
+</div>
+
+<!-- ═══════════ STORAGE PAGE ═══════════ -->
+<div id="page-storage" class="page">
+  <div class="section-header">
+    <div class="section-title">Cold Storage</div>
+    <span class="badge badge-teal">Real-time Monitoring</span>
+  </div>
+  <div id="storage-alerts"></div>
+
+  <div class="grid-3" style="margin-bottom:16px">
+    <div class="stat-box">
+      <div class="stat-num" id="stor-total" style="color:var(--accent)">0</div>
+      <div class="stat-label">Units in Storage</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num" id="stor-critical" style="color:var(--danger)">0</div>
+      <div class="stat-label">Temp Alerts</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num" id="stor-expiring" style="color:var(--warn)">0</div>
+      <div class="stat-label">Expiring Soon</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Storage Units</div>
+    <div id="storage-list"></div>
+    <div id="storage-empty" style="color:var(--text-dim);font-size:13px;text-align:center;padding:20px;">Storage is empty.</div>
+  </div>
+</div>
+
+<!-- ═══════════ HOSPITAL PAGE ═══════════ -->
+<div id="page-hospital" class="page">
+  <div class="section-header">
+    <div class="section-title">Patient Requests</div>
+    <span class="badge badge-blue">Hospital View</span>
+  </div>
+
+  <div class="card">
+    <div class="card-title">New Patient Request</div>
+    <div class="grid-2">
+      <div>
+        <label>Patient Name</label>
+        <input id="p-name" type="text" placeholder="Priya Menon">
+        <label>Blood Type Required</label>
+        <select id="p-blood">
+          <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+          <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+        </select>
+      </div>
+      <div>
+        <label>Request Type</label>
+        <select id="p-type" onchange="updatePatientForm()">
+          <option value="blood">Blood Unit</option>
+          <option value="organ">Organ</option>
+        </select>
+        <div id="p-organ-field" class="hidden">
+          <label>Organ Needed</label>
+          <select id="p-organ">
+            <option>Kidney</option><option>Liver</option><option>Heart</option>
+            <option>Lungs</option><option>Pancreas</option><option>Cornea</option>
+          </select>
+        </div>
+        <label>Urgency</label>
+        <select id="p-urgency">
+          <option value="critical">Critical</option>
+          <option value="urgent">Urgent</option>
+          <option value="routine">Routine</option>
+        </select>
+        <button class="btn btn-primary" onclick="submitPatientRequest()" style="width:100%;margin-top:6px;">Search Matching Storage →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Match Results</div>
+    <div id="match-results"><div style="color:var(--text-dim);font-size:13px;text-align:center;padding:20px;">Submit a request to find matches.</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Active Patient Requests</div>
+    <div id="patient-requests-list"></div>
+    <div id="patient-req-empty" style="color:var(--text-dim);font-size:13px;text-align:center;padding:20px;">No active requests.</div>
+  </div>
+</div>
+
+<!-- ═══════════ DISPATCH PAGE ═══════════ -->
+<div id="page-dispatch" class="page">
+  <div class="section-header">
+    <div class="section-title">Dispatch & Logistics</div>
+    <span class="badge badge-yellow">Operations</span>
+  </div>
+  <div id="dispatch-alerts"></div>
+
+  <div id="dispatch-list"></div>
+  <div id="dispatch-empty" style="color:var(--text-dim);font-size:13px;text-align:center;padding:40px;">No dispatches pending.</div>
+</div>
+
+<!-- ═══════════ PATIENT TRACKING PAGE ═══════════ -->
+<div id="page-patient" class="page">
+  <div class="section-header">
+    <div class="section-title">Live Delivery Tracking</div>
+    <span class="badge badge-teal">Patient View</span>
+  </div>
+
+  <div id="patient-tracking-list"></div>
+  <div id="pt-empty" style="color:var(--text-dim);font-size:13px;text-align:center;padding:40px;">No active deliveries to track.</div>
+</div>
+
+
+<script>
+// ──────────── STATE ────────────
+const state = {
+  donations: [],      // registered donations
+  storage: [],        // approved units in storage
+  requests: [],       // patient requests
+  dispatches: [],     // active dispatches
+  idCounter: 1000,
+};
+
+// ──────────── FACILITIES ────────────
+const facilities = {
+  blood: ['Apollo Blood Bank – Greams Rd', 'Global Health Blood Bank', 'LifeSource Blood Center', 'Fortis Blood Bank'],
+  organ: ['Apollo Hospitals – Greams', 'MIOT International', 'Vijaya Hospital', 'Kauvery Hospital'],
+};
+const CITIES = ['Chennai','Mumbai','Delhi','Bengaluru'];
+
+function updateDonorForm() {
+  const t = document.getElementById('d-type').value;
+  document.getElementById('organ-fields').classList.toggle('hidden', t !== 'organ');
+  updateFacilityList();
+}
+function updatePatientForm() {
+  const t = document.getElementById('p-type').value;
+  document.getElementById('p-organ-field').classList.toggle('hidden', t !== 'organ');
+}
+function updateFacilityList() {
+  const t = document.getElementById('d-type').value;
+  const sel = document.getElementById('d-facility');
+  sel.innerHTML = '';
+  const city = document.getElementById('d-city').value;
+  facilities[t].forEach(f => {
+    const o = document.createElement('option');
+    o.textContent = city + ' — ' + f;
+    sel.appendChild(o);
+  });
+}
+updateFacilityList();
+document.getElementById('d-city').addEventListener('change', updateFacilityList);
+document.getElementById('d-date').value = new Date().toISOString().split('T')[0];
+
+// ──────────── DONOR SUBMIT ────────────
+function submitDonation() {
+  const name = document.getElementById('d-name').value.trim();
+  if (!name) { showAlert('donor-alerts','Please enter your name.','warn'); return; }
+  const id = 'VC' + (++state.idCounter);
+  const type = document.getElementById('d-type').value;
+  const organ = type === 'organ' ? document.getElementById('d-organ').value : null;
+  const blood = document.getElementById('d-blood').value;
+  const facility = document.getElementById('d-facility').value;
+
+  const donation = {
+    id, name, type, organ, blood, facility,
+    status: 'registered',  // registered → procured → testing → approved/disposed
+    createdAt: new Date().toLocaleString(),
+    tempHistory: [],
+  };
+  state.donations.push(donation);
+  showAlert('donor-alerts', `Donation ${id} registered! Head to ${facility}.`, 'success');
+  renderDonorList();
+  renderLabList();
+  updateLabStats();
+  document.getElementById('donation-status-card').style.display='block';
+  renderDonorTimeline(donation);
+
+  // auto-advance to procured after 2s (simulation)
+  setTimeout(() => { donation.status = 'procured'; renderDonorList(); renderLabList(); renderDonorTimeline(donation); updateLabStats(); }, 2000);
+}
+
+function renderDonorList() {
+  const list = document.getElementById('donor-list');
+  const empty = document.getElementById('donor-empty');
+  if (!state.donations.length) { list.innerHTML=''; empty.style.display=''; return; }
+  empty.style.display = 'none';
+  list.innerHTML = state.donations.map(d => `
+    <div class="match-card">
+      <div class="match-icon">${d.type==='blood'?'🩸':'🫀'}</div>
+      <div class="match-info">
+        <div class="match-name">${d.name} <span class="tag ${d.type==='blood'?'tag-blood':'tag-organ'}">${d.type==='blood'?d.blood:d.organ}</span></div>
+        <div class="match-meta">${d.id} · ${d.facility}</div>
+      </div>
+      <span class="badge ${statusBadge(d.status)}">${d.status}</span>
+    </div>
+  `).join('');
+  if (state.donations.length) renderDonorTimeline(state.donations[state.donations.length-1]);
+}
+
+function renderDonorTimeline(d) {
+  const steps = [
+    { key:'registered', label:'Donor Registered', sub: d.createdAt },
+    { key:'procured', label:'Procurement', sub: d.facility },
+    { key:'testing', label:'Lab Testing', sub: 'Blood type, disease screening' },
+    { key:'approved', label:'Approved & Stored', sub: 'Entered cold storage' },
+    { key:'dispatched', label:'Dispatched', sub: 'Custody transferred to vehicle' },
+    { key:'delivered', label:'Delivered to Patient', sub: 'Journey complete' },
+  ];
+  const order = steps.map(s=>s.key);
+  const cur = order.indexOf(d.status);
+  const tl = document.getElementById('donor-timeline');
+  tl.innerHTML = steps.map((s, i) => {
+    let cls = i < cur ? 'done' : (i === cur ? 'active' : '');
+    if (d.status === 'disposed' && i === 3) cls = 'error';
+    return `<div class="tl-item">
+      <div class="tl-dot ${cls}"></div>
+      <div class="tl-title">${s.label}</div>
+      <div class="tl-sub">${s.sub}</div>
+    </div>`;
+  }).join('');
+}
+
+function statusBadge(s) {
+  const m = { registered:'badge-teal', procured:'badge-blue', testing:'badge-yellow',
+               approved:'badge-green', disposed:'badge-red', dispatched:'badge-yellow',
+               intransit:'badge-yellow', delivered:'badge-green' };
+  return m[s] || 'badge-teal';
+}
+
+// ──────────── LAB / PROCUREMENT ────────────
+function renderLabList() {
+  const list = document.getElementById('lab-list');
+  const empty = document.getElementById('lab-empty');
+  const pending = state.donations.filter(d => ['procured','testing'].includes(d.status));
+  if (!pending.length) { list.innerHTML=''; empty.style.display=''; return; }
+  empty.style.display='none';
+  list.innerHTML = pending.map(d => `
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div>
+          <span style="font-size:15px;font-weight:700">${d.id}</span>
+          <span class="tag ${d.type==='blood'?'tag-blood':'tag-organ'}" style="margin-left:8px">${d.type==='blood'?d.blood:d.organ}</span>
+          <span class="badge ${statusBadge(d.status)}" style="margin-left:8px">${d.status}</span>
+        </div>
+        <div style="font-size:12px;color:var(--text-dim)">${d.name} · ${d.facility}</div>
+      </div>
+      ${d.status === 'procured' ? `
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-warn btn-sm" onclick="runTests('${d.id}')">▶ Run Tests</button>
+        </div>` : ''}
+      ${d.status === 'testing' ? `
+        <div class="alert alert-warn">🔬 Testing in progress…</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-primary btn-sm" onclick="approveTest('${d.id}')">✓ Approve</button>
+          <button class="btn btn-danger btn-sm" onclick="disposeTest('${d.id}')">✕ Dispose (Fail)</button>
+        </div>` : ''}
+    </div>
+  `).join('');
+}
+
+function updateLabStats() {
+  document.getElementById('stat-pending').textContent = state.donations.filter(d=>['procured','testing'].includes(d.status)).length;
+  document.getElementById('stat-approved').textContent = state.donations.filter(d=>d.status==='approved'||d.status==='dispatched'||d.status==='intransit'||d.status==='delivered').length;
+  document.getElementById('stat-disposed').textContent = state.donations.filter(d=>d.status==='disposed').length;
+}
+
+function runTests(id) {
+  const d = state.donations.find(x=>x.id===id);
+  d.status = 'testing';
+  renderLabList(); updateLabStats(); renderDonorList();
+  setTimeout(()=>{ renderLabList(); }, 100);
+}
+
+function approveTest(id) {
+  const d = state.donations.find(x=>x.id===id);
+  d.status = 'approved';
+  // add to storage
+  const unit = {
+    id: d.id,
+    type: d.type,
+    blood: d.blood,
+    organ: d.organ,
+    donor: d.name,
+    facility: d.facility,
+    storedAt: new Date().toLocaleTimeString(),
+    temp: d.type==='blood' ? 4.2 : -4.5,
+    tempSafe: true,
+    lifecycle: d.type==='blood' ? 42 : (d.type==='organ' ? getDaylife(d.organ) : 42),
+    daysLeft: d.type==='blood' ? 42 : getDaylife(d.organ),
+    matched: false,
+  };
+  state.storage.push(unit);
+  renderLabList(); updateLabStats(); renderDonorList(); renderStorage(); updateStorageStats();
+  if(state.donations.find(x=>x.id===id)) renderDonorTimeline(state.donations.find(x=>x.id===id));
+}
+
+function getDaylife(organ) {
+  const m = { Kidney:30, Liver:1, Heart:0.17, Lungs:0.25, Pancreas:1, Cornea:14 };
+  return m[organ] || 5;
+}
+
+function disposeTest(id) {
+  const d = state.donations.find(x=>x.id===id);
+  d.status = 'disposed';
+  renderLabList(); updateLabStats(); renderDonorList(); renderDonorTimeline(d);
+}
+
+// ──────────── STORAGE ────────────
+function renderStorage() {
+  const list = document.getElementById('storage-list');
+  const empty = document.getElementById('storage-empty');
+  const avail = state.storage.filter(u=>!u.matched);
+  if (!state.storage.length) { list.innerHTML=''; empty.style.display=''; return; }
+  empty.style.display='none';
+  list.innerHTML = state.storage.map(u => {
+    const pct = Math.min(100, ((u.lifecycle - u.daysLeft)/u.lifecycle)*100);
+    const color = u.tempSafe ? 'var(--accent)' : 'var(--danger)';
+    const tempPct = u.type==='blood' ? ((u.temp - 1)/(8-1)*100) : ((u.temp - (-10))/(0-(-10))*100);
+    const tempColor = u.tempSafe ? 'var(--safe)' : 'var(--danger)';
+    const circ = 2*Math.PI*14;
+    return `
+    <div class="storage-item" style="${!u.tempSafe?'border-color:var(--danger);background:rgba(231,76,60,.06);':''}">
+      <div class="progress-ring">
+        <svg width="38" height="38" viewBox="0 0 38 38">
+          <circle cx="19" cy="19" r="14" fill="none" stroke="var(--border)" stroke-width="3"/>
+          <circle cx="19" cy="19" r="14" fill="none" stroke="${color}" stroke-width="3"
+            stroke-dasharray="${circ}" stroke-dashoffset="${circ*(1-pct/100)}" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <span style="font-size:13px;font-weight:700">${u.id}</span>
+          <span class="tag ${u.type==='blood'?'tag-blood':'tag-organ'}">${u.type==='blood'?u.blood:u.organ}</span>
+          ${u.matched?'<span class="badge badge-yellow">Matched</span>':''}
+          ${!u.tempSafe?'<span class="badge badge-red flicker">⚠ TEMP ALERT</span>':''}
+        </div>
+        <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px">
+          Donor: ${u.donor} · Stored: ${u.storedAt} · ${u.daysLeft.toFixed(2)}d remaining
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:11px;color:var(--text-dim)">🌡️</span>
+          <div class="temp-bar-wrap" style="flex:1">
+            <div class="temp-bar" style="width:${Math.max(0,Math.min(100,tempPct))}%;background:${tempColor}"></div>
+          </div>
+          <span class="temp-mini" style="color:${tempColor}">${u.temp.toFixed(1)}°C</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function updateStorageStats() {
+  document.getElementById('stor-total').textContent = state.storage.length;
+  document.getElementById('stor-critical').textContent = state.storage.filter(u=>!u.tempSafe).length;
+  document.getElementById('stor-expiring').textContent = state.storage.filter(u=>u.daysLeft<3).length;
+}
+
+// ──────────── PATIENT / HOSPITAL ────────────
+function submitPatientRequest() {
+  const name = document.getElementById('p-name').value.trim();
+  if (!name) { return; }
+  const type = document.getElementById('p-type').value;
+  const blood = document.getElementById('p-blood').value;
+  const organ = document.getElementById('p-organ').value;
+  const urgency = document.getElementById('p-urgency').value;
+
+  const req = {
+    id: 'RQ'+(++state.idCounter),
+    name, type, blood, organ: type==='organ'?organ:null,
+    urgency, status: 'searching', createdAt: new Date().toLocaleTimeString(),
+  };
+  state.requests.push(req);
+
+  // find matches in storage
+  const matches = state.storage.filter(u => {
+    if (u.matched) return false;
+    if (u.type !== type) return false;
+    if (type==='blood') return isCompatible(u.blood, blood);
+    return u.organ === req.organ;
+  });
+
+  renderMatchResults(matches, req);
+  renderPatientRequestList();
+}
+
+function isCompatible(donor, recipient) {
+  const compat = {
+    'O-': ['O-','O+','A-','A+','B-','B+','AB-','AB+'],
+    'O+': ['O+','A+','B+','AB+'],
+    'A-': ['A-','A+','AB-','AB+'],
+    'A+': ['A+','AB+'],
+    'B-': ['B-','B+','AB-','AB+'],
+    'B+': ['B+','AB+'],
+    'AB-': ['AB-','AB+'],
+    'AB+': ['AB+'],
+  };
+  return (compat[donor] || []).includes(recipient);
+}
+
+function renderMatchResults(matches, req) {
+  const div = document.getElementById('match-results');
+  if (!matches.length) {
+    div.innerHTML = `<div class="alert alert-warn">⚠ No compatible ${req.type} units found for ${req.name} (${req.blood}). Unit will remain in storage until lifecycle ends.</div>`;
+    return;
+  }
+  div.innerHTML = `<div class="alert alert-success">✓ Found ${matches.length} compatible unit(s) for ${req.name}</div>` +
+    matches.map(u => `
+      <div class="match-card matched">
+        <div class="match-icon">${u.type==='blood'?'🩸':'🫀'}</div>
+        <div class="match-info">
+          <div class="match-name">${u.id} — ${u.type==='blood'?u.blood:u.organ} <span style="font-size:12px;color:var(--text-dim)">Donor: ${u.donor}</span></div>
+          <div class="match-meta">Stored at: ${u.storedAt} · ${u.temp.toFixed(1)}°C · ${u.daysLeft.toFixed(2)}d left</div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="assignDispatch('${u.id}','${req.id}')">Pack & Dispatch →</button>
+      </div>
+    `).join('');
+}
+
+function renderPatientRequestList() {
+  const list = document.getElementById('patient-requests-list');
+  const empty = document.getElementById('patient-req-empty');
+  if (!state.requests.length) { list.innerHTML=''; empty.style.display=''; return; }
+  empty.style.display='none';
+  list.innerHTML = state.requests.map(r => `
+    <div class="storage-item">
+      <div style="font-size:20px">${r.type==='blood'?'🩸':'🫀'}</div>
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:14px">${r.name} <span class="badge ${r.urgency==='critical'?'badge-red':'badge-yellow'}">${r.urgency}</span></div>
+        <div style="font-size:12px;color:var(--text-dim)">${r.id} · ${r.type==='blood'?r.blood:r.organ} · ${r.createdAt}</div>
+      </div>
+      <span class="badge ${statusBadge(r.status)}">${r.status}</span>
+    </div>
+  `).join('');
+}
+
+function updatePatientForm() {
+  const t = document.getElementById('p-type').value;
+  document.getElementById('p-organ-field').classList.toggle('hidden', t!=='organ');
+}
+
+// ──────────── DISPATCH ────────────
+function assignDispatch(unitId, reqId) {
+  const unit = state.storage.find(u=>u.id===unitId);
+  const req = state.requests.find(r=>r.id===reqId);
+  if (!unit || !req) return;
+  unit.matched = true;
+  req.status = 'dispatched';
+
+  const dispId = 'DS'+(++state.idCounter);
+  const dispatch = {
+    id: dispId,
+    unitId, reqId,
+    patient: req.name,
+    type: unit.type,
+    blood: unit.blood,
+    organ: unit.organ,
+    container: 'CTR-'+Math.floor(Math.random()*900+100),
+    vehicle: ['Ambulance KA-09','Ambulance MH-12','Delivery Van TN-01','Courier EN-22'][Math.floor(Math.random()*4)],
+    temp: unit.temp,
+    tempSafe: true,
+    status: 'packing', // packing → custody → intransit → delivered
+    gpsLat: 13.0827, gpsLng: 80.2707,
+    destLat: 13.0600, destLng: 80.2500,
+    progress: 0,
+    alerts: [],
+    log: ['Dispatch record created — ' + new Date().toLocaleTimeString()],
+    createdAt: new Date().toLocaleTimeString(),
+  };
+  state.dispatches.push(dispatch);
+
+  // update donor donation status
+  const donation = state.donations.find(d=>d.id===unitId);
+  if (donation) { donation.status = 'dispatched'; renderDonorList(); renderDonorTimeline(donation); }
+
+  renderDispatch();
+  renderPatientTracking();
+  renderPatientRequestList();
+  renderMatchResults([], req);
+
+  // Simulate packing → custody
+  setTimeout(()=>{
+    dispatch.status='custody';
+    dispatch.log.push('Container '+dispatch.container+' assigned · Custody transferred to '+dispatch.vehicle+' — '+new Date().toLocaleTimeString());
+    renderDispatch(); renderPatientTracking();
+  }, 2000);
+}
+
+function renderDispatch() {
+  const list = document.getElementById('dispatch-list');
+  const empty = document.getElementById('dispatch-empty');
+  if (!state.dispatches.length) { list.innerHTML=''; empty.style.display=''; return; }
+  empty.style.display='none';
+  list.innerHTML = state.dispatches.map(d => {
+    const tempColor = d.tempSafe ? 'var(--safe)' : 'var(--danger)';
+    return `
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+        <div>
+          <span style="font-weight:800;font-size:15px">${d.id}</span>
+          <span class="tag ${d.type==='blood'?'tag-blood':'tag-organ'}" style="margin-left:8px">${d.type==='blood'?d.blood:d.organ}</span>
+          <span class="badge ${statusBadge(d.status)}" style="margin-left:8px">${d.status}</span>
+        </div>
+        <span style="font-size:12px;color:var(--text-dim)">Patient: ${d.patient} · ${d.vehicle}</span>
+      </div>
+
+      ${d.alerts.map(a=>`<div class="alert alert-danger">⚠ ${a}</div>`).join('')}
+
+      <div class="grid-2" style="margin-bottom:12px">
+        <div>
+          <div style="font-size:11px;color:var(--text-dim);margin-bottom:4px;text-transform:uppercase;letter-spacing:1px">Container</div>
+          <div class="mono" style="font-size:13px">${d.container}</div>
+          <div style="font-size:11px;color:var(--text-dim);margin-top:8px;margin-bottom:4px;text-transform:uppercase;letter-spacing:1px">Live Temperature</div>
+          <div class="temp-reading" style="color:${tempColor}">${d.temp.toFixed(1)}°C ${!d.tempSafe?'⚠':'✓'}</div>
+          <div class="temp-bar-wrap">
+            <div class="temp-bar" style="width:${Math.max(0,Math.min(100,((d.temp-(-15))/(20-(-15)))*100))}%;background:${tempColor}"></div>
+          </div>
+          <div style="font-size:10px;color:var(--text-dim)">Safe range: ${d.type==='blood'?'2–6°C':'-10–0°C'}</div>
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--text-dim);margin-bottom:4px;text-transform:uppercase;letter-spacing:1px"><span class="gps-dot"></span>GPS Location</div>
+          <div class="mono" style="font-size:12px">Lat: ${d.gpsLat.toFixed(4)}</div>
+          <div class="mono" style="font-size:12px">Lng: ${d.gpsLng.toFixed(4)}</div>
+          <div style="font-size:12px;color:var(--text-dim);margin-top:6px">Progress: ${d.progress.toFixed(0)}%</div>
+          <div class="temp-bar-wrap"><div class="temp-bar" style="width:${d.progress}%;background:var(--accent)"></div></div>
+        </div>
+      </div>
+
+      <div class="map-area" style="margin-bottom:12px">
+        <div class="map-grid"></div>
+        <div class="map-label" style="left:10px;top:10px">📍 Origin: Storage</div>
+        <div class="map-label" style="right:10px;bottom:10px">🏥 Destination: Hospital</div>
+        <div class="map-vehicle" style="left:${10+d.progress*0.75}%;top:${50-d.progress*0.2}%">
+          ${d.type==='blood'?'🚑':'✈️'}
+        </div>
+        <svg class="map-route" viewBox="0 0 100 100" preserveAspectRatio="none">
+          <path d="M 10,60 Q 50,20 90,80" fill="none" stroke="rgba(0,229,176,0.2)" stroke-width="1.5" stroke-dasharray="3,2"/>
+          <path d="M 10,60 Q 50,20 90,80" fill="none" stroke="var(--accent)" stroke-width="1.5"
+            stroke-dasharray="${d.progress*1.3} 200" stroke-linecap="round"/>
+        </svg>
+      </div>
+
+      <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px">Event Log</div>
+      <div style="background:var(--surface2);border-radius:6px;padding:10px;max-height:100px;overflow-y:auto">
+        ${d.log.map(l=>`<div class="mono" style="font-size:11px;color:var(--text-dim);margin-bottom:3px">▸ ${l}</div>`).join('')}
+      </div>
+
+      <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+        ${d.status==='custody'?`<button class="btn btn-primary btn-sm" onclick="startTransit('${d.id}')">▶ Start Transit</button>`:''}
+        ${d.status==='intransit'?`<button class="btn btn-primary btn-sm" onclick="markDelivered('${d.id}')">✓ Mark Delivered</button>`:''}
+        ${d.status==='intransit'?`<button class="btn btn-warn btn-sm" onclick="triggerTempAlert('${d.id}')">🌡 Simulate Temp Fail</button>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function startTransit(id) {
+  const d = state.dispatches.find(x=>x.id===id);
+  d.status = 'intransit';
+  d.log.push('Vehicle departed · GPS tracking active — '+new Date().toLocaleTimeString());
+
+  // update donation
+  const donation = state.donations.find(x=>x.id===d.unitId);
+  if (donation) { donation.status = 'intransit'; renderDonorList(); renderDonorTimeline(donation); }
+
+  renderDispatch(); renderPatientTracking();
+  // simulate movement
+  const interval = setInterval(()=>{
+    if (d.progress >= 100 || d.status==='delivered') { clearInterval(interval); return; }
+    d.progress = Math.min(100, d.progress + (Math.random()*3+1));
+    d.gpsLat -= 0.001*Math.random();
+    d.gpsLng -= 0.0008*Math.random();
+    // random temp drift
+    const drift = (Math.random()-0.48)*0.3;
+    d.temp = parseFloat((d.temp + drift).toFixed(2));
+    const safe = d.type==='blood' ? (d.temp>=2&&d.temp<=6) : (d.temp>=-10&&d.temp<=0);
+    if (!safe && d.tempSafe) {
+      d.tempSafe = false;
+      d.alerts.push(`Temperature out of safe range: ${d.temp.toFixed(1)}°C at ${new Date().toLocaleTimeString()}`);
+      d.log.push(`⚠ TEMP ALERT: ${d.temp.toFixed(1)}°C — outside safe zone!`);
+      showAlert('dispatch-alerts',`🚨 CRITICAL: ${d.id} temperature alert — ${d.temp.toFixed(1)}°C`, 'danger');
+    } else if (safe) {
+      d.tempSafe = true;
+    }
+    renderDispatch(); renderPatientTracking();
+    renderStorage();
+  }, 1500);
+  d._interval = interval;
+}
+
+function markDelivered(id) {
+  const d = state.dispatches.find(x=>x.id===id);
+  if (d._interval) clearInterval(d._interval);
+  d.status = 'delivered';
+  d.progress = 100;
+  d.log.push('✓ Delivered to patient · Journey closed — '+new Date().toLocaleTimeString());
+
+  const donation = state.donations.find(x=>x.id===d.unitId);
+  if (donation) { donation.status = 'delivered'; renderDonorList(); renderDonorTimeline(donation); }
+  const req = state.requests.find(r=>r.id===d.reqId);
+  if (req) req.status = 'delivered';
+
+  // remove from storage
+  const idx = state.storage.findIndex(u=>u.id===d.unitId);
+  if (idx !== -1) state.storage.splice(idx,1);
+
+  renderDispatch(); renderPatientTracking(); renderStorage(); updateStorageStats(); renderPatientRequestList();
+  showAlert('dispatch-alerts', `✓ Journey ${id} closed. Organ/blood delivered successfully.`, 'success');
+}
+
+function triggerTempAlert(id) {
+  const d = state.dispatches.find(x=>x.id===id);
+  d.temp = d.type==='blood' ? 15 : 5;
+  d.tempSafe = false;
+  d.alerts.push(`Manual temp simulation: ${d.temp}°C — UNSAFE at ${new Date().toLocaleTimeString()}`);
+  d.log.push(`⚠ Temp spike simulated: ${d.temp}°C`);
+  showAlert('dispatch-alerts',`🚨 TEMP FAILURE on dispatch ${id}: ${d.temp}°C recorded!`,'danger');
+  renderDispatch(); renderPatientTracking();
+}
+
+// ──────────── PATIENT TRACKING ────────────
+function renderPatientTracking() {
+  const list = document.getElementById('patient-tracking-list');
+  const empty = document.getElementById('pt-empty');
+  const active = state.dispatches.filter(d=>['custody','intransit'].includes(d.status));
+  const closed = state.dispatches.filter(d=>d.status==='delivered');
+
+  if (!state.dispatches.length) { list.innerHTML=''; empty.style.display=''; return; }
+  empty.style.display='none';
+
+  list.innerHTML = closed.map(d=>`
+    <div class="card journey-closed">
+      <div class="big-icon">🎉</div>
+      <h2>Journey Complete — ${d.id}</h2>
+      <p style="color:var(--text-dim)">The ${d.type==='blood'?'blood unit ('+d.blood+')':d.organ} has been successfully delivered to ${d.patient}.<br/>Journey closed at ${d.log[d.log.length-1].split('—')[1]||'just now'}.</p>
+    </div>
+  `).join('') + active.map(d=>{
+    const tempColor = d.tempSafe ? 'var(--safe)' : 'var(--danger)';
+    return `
+    <div class="card">
+      <div class="card-title"><span class="gps-dot"></span>Live Tracking — ${d.id}</div>
+      ${d.alerts.map(a=>`<div class="alert alert-danger">⚠ ${a}</div>`).join('')}
+      <div style="text-align:center;margin-bottom:16px">
+        <div style="font-size:13px;color:var(--text-dim)">Delivering to</div>
+        <div style="font-size:20px;font-weight:800">${d.patient}</div>
+        <div style="font-size:13px;color:var(--text-dim)">${d.type==='blood'?'Blood ('+d.blood+')':d.organ} · ${d.vehicle}</div>
+      </div>
+
+      <div class="map-area" style="margin-bottom:16px">
+        <div class="map-grid"></div>
+        <div class="map-label" style="left:10px;top:10px">📍 Origin</div>
+        <div class="map-label" style="right:10px;bottom:10px">🏥 ${d.patient}</div>
+        <div class="map-vehicle" style="left:${10+d.progress*0.75}%;top:${50-d.progress*0.2}%">
+          ${d.type==='blood'?'🚑':'✈️'}
+        </div>
+        <svg class="map-route" viewBox="0 0 100 100" preserveAspectRatio="none">
+          <path d="M 10,60 Q 50,20 90,80" fill="none" stroke="rgba(0,229,176,0.2)" stroke-width="1.5" stroke-dasharray="3,2"/>
+          <path d="M 10,60 Q 50,20 90,80" fill="none" stroke="var(--accent)" stroke-width="1.5"
+            stroke-dasharray="${d.progress*1.3} 200" stroke-linecap="round"/>
+        </svg>
+      </div>
+
+      <div class="grid-2">
+        <div>
+          <div style="font-size:11px;color:var(--text-dim);margin-bottom:4px">ETA Progress</div>
+          <div class="temp-bar-wrap"><div class="temp-bar" style="width:${d.progress}%;background:var(--accent)"></div></div>
+          <div style="font-size:13px;font-weight:700;margin-top:4px">${d.progress.toFixed(0)}% en route</div>
+          <div class="mono" style="font-size:11px;color:var(--text-dim);margin-top:4px">
+            GPS: ${d.gpsLat.toFixed(4)}, ${d.gpsLng.toFixed(4)}
+          </div>
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--text-dim);margin-bottom:4px">Live Temperature</div>
+          <div class="temp-bar-wrap"><div class="temp-bar" style="width:${Math.max(0,Math.min(100,((d.temp-(-15))/(20-(-15)))*100))}%;background:${tempColor}"></div></div>
+          <div style="font-size:20px;font-weight:800;color:${tempColor}">${d.temp.toFixed(1)}°C</div>
+          <div style="font-size:11px;color:${d.tempSafe?'var(--safe)':'var(--danger)'}">${d.tempSafe?'✓ Temperature Safe':'⚠ TEMPERATURE UNSAFE!'}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ──────────── ALERT HELPER ────────────
+function showAlert(containerId, msg, type='success') {
+  const div = document.getElementById(containerId);
+  if (!div) return;
+  const a = document.createElement('div');
+  a.className = `alert alert-${type}`;
+  a.textContent = msg;
+  div.prepend(a);
+  setTimeout(()=>a.remove(), 6000);
+}
+
+// ──────────── STORAGE TEMP SIMULATION ────────────
+setInterval(()=>{
+  let hasAlert = false;
+  state.storage.forEach(u => {
+    const drift = (Math.random()-0.49)*0.2;
+    u.temp = parseFloat((u.temp + drift).toFixed(2));
+    const safe = u.type==='blood' ? (u.temp>=1&&u.temp<=8) : (u.temp>=-10&&u.temp<=0);
+    if (!safe && u.tempSafe) {
+      u.tempSafe = false;
+      showAlert('storage-alerts',`⚠ Unit ${u.id} temp out of range: ${u.temp.toFixed(1)}°C`,'danger');
+      hasAlert = true;
+    } else if (safe && !u.tempSafe) {
+      u.tempSafe = true;
+    }
+    // lifecycle decay
+    u.daysLeft = Math.max(0, u.daysLeft - 0.001);
+  });
+  if (state.storage.length) { renderStorage(); updateStorageStats(); }
+}, 2000);
+
+// ──────────── NAVIGATION ────────────
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// init renders
+renderDonorList();
+renderLabList();
+renderStorage();
+renderPatientTracking();
+</script>
+</body>
+</html>

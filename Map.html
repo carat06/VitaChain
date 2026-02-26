@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dynamic Route Tracker</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <style>
+    body { font-family: Arial; }
+    #map { height: 500px; margin-top: 10px; }
+    input { padding: 8px; margin: 5px; width: 200px; }
+    button { padding: 8px 15px; }
+  </style>
+</head>
+<body>
+
+<h2>Source → Destination Route Tracker</h2>
+
+<input type="text" id="source" placeholder="Enter Source (e.g. Chennai)">
+<input type="text" id="destination" placeholder="Enter Destination (e.g. Bangalore)">
+<button onclick="getRoute()">Show Route</button>
+
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+const map = L.map('map').setView([20, 78], 5);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '© OpenStreetMap'
+}).addTo(map);
+
+let routeLine;
+let marker;
+
+async function getCoordinates(place) {
+  const response = await fetch(
+    `https://nominatim.openstreetmap.org/search?format=json&q=${place}`
+  );
+  const data = await response.json();
+  return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
+}
+
+async function getRoute() {
+  const sourcePlace = document.getElementById("source").value;
+  const destPlace = document.getElementById("destination").value;
+
+  const source = await getCoordinates(sourcePlace);
+  const destination = await getCoordinates(destPlace);
+
+  const routeResponse = await fetch(
+    `https://router.project-osrm.org/route/v1/driving/${source[1]},${source[0]};${destination[1]},${destination[0]}?overview=full&geometries=geojson`
+  );
+
+  const routeData = await routeResponse.json();
+  const coordinates = routeData.routes[0].geometry.coordinates;
+
+  const latLngs = coordinates.map(coord => [coord[1], coord[0]]);
+
+  if (routeLine) map.removeLayer(routeLine);
+  if (marker) map.removeLayer(marker);
+
+  routeLine = L.polyline(latLngs, { color: 'blue' }).addTo(map);
+  map.fitBounds(routeLine.getBounds());
+
+  marker = L.marker(latLngs[0]).addTo(map);
+
+  animateMarker(latLngs);
+}
+
+function animateMarker(routeCoords) {
+  let i = 0;
+
+  function move() {
+    if (i < routeCoords.length) {
+      marker.setLatLng(routeCoords[i]);
+      map.panTo(routeCoords[i], { animate: false });
+      i++;
+      setTimeout(move, 50);
+    }
+  }
+
+  move();
+}
+</script>
+
+</body>
+</html>
